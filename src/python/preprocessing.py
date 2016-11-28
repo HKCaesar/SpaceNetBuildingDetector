@@ -5,8 +5,7 @@ import numpy as np
 
 from spaceNet import geoTools as gT
 from shapely.geometry import Polygon, shape, Point
-#from osgeo import gdal
-from osgeo import gdal, osr, ogr
+from osgeo import gdal
 
 # The path to the data directory where TIFF files located among with WKT
 path = sys.argv[1]
@@ -42,16 +41,14 @@ for image_id, bList in imageDict.iteritems():
         else:
             print "Processing building #{0}".format(record['BuildingId'])
 
-        #json_poly = json.loads(polyGeo.ExportToJson())
-        polygon = polyGeo#shape(json_poly)
+        json_poly = json.loads(polyGeo.ExportToJson())
+        polygon = shape(json_poly)
         for i in range(ds8.RasterXSize):
             for j in range(ds8.RasterYSize):
-                #point = Point(i, j)
-                point = ogr.Geometry(ogr.wkbPoint)
-                point.AddPoint(i, j)
-                newpd = point.Distance(polygon)#point.distance(polygon.boundary)
+                point = Point(i, j)
+                newpd = point.distance(polygon.boundary)
                 pd = -100000.0
-                if False == polygon.Intersects(point):# polygon.contains(point):
+                if False == polygon.contains(point):
                     newpd = -1.0 * newpd
                 if newpd > pd:
                     pd = newpd
