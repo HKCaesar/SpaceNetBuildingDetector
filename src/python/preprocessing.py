@@ -10,6 +10,13 @@ from osgeo import gdal
 # The path to the data directory where TIFF files located among with WKT
 path = sys.argv[1]
 
+if len(sys.argv) == 3:
+    scale = float(sys.argv[2])
+else:
+    scale = 1.0
+
+print "Path: {0}, scale for truth WKT: {1}".format(path, scale)
+
 # read WKT file with buildings footrpints
 buildinglist = gT.readwktcsv(path + 'truth.csv')
 # the image dictionary
@@ -27,7 +34,7 @@ for image_id, bList in imageDict.iteritems():
     print "Processing image: " + image_id
     # load TIFF images
     ds8 = gdal.Open(path+'8band/'+'8band_'+image_id+'.tif')
-    ds3 = gdal.Open(path+'3band/'+'3band_'+image_id+'.tif')
+    #ds3 = gdal.Open(path+'3band/'+'3band_'+image_id+'.tif')
 
     # the distance array
     dist = np.zeros((ds8.RasterXSize, ds8.RasterYSize))
@@ -45,7 +52,7 @@ for image_id, bList in imageDict.iteritems():
         polygon = shape(json_poly)
         for i in range(ds8.RasterXSize):
             for j in range(ds8.RasterYSize):
-                point = Point(i, j)
+                point = Point(i * scale, j * scale)
                 newpd = point.distance(polygon.boundary)
                 pd = -100000.0
                 if False == polygon.contains(point):

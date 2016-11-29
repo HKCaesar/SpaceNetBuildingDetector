@@ -2,4 +2,4 @@
 #
 # The preprocessing script
 #
-python python/preprocessing.py "../data/"
+python python/preprocessing.py "../data/" 4
